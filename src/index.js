@@ -39,7 +39,7 @@ const Editor = () => {
         <ImageLayer id="hi"
           // Photo by Sarah Gualtieri on Unsplash
           // src="https://user-images.githubusercontent.com/4413963/70390894-a1880180-1a12-11ea-9901-e250d0f7bb2b.jpg"
-          src="bg.jpg"
+          src="https://github.com/iam-kira/react-selection/blob/master/src/bg.jpg?raw=true"
 
           onLoad={({ naturalWidth, naturalHeight }) => {
             setVectorDimensions({
