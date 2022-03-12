@@ -1,17 +1,91 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import {
+  ShapeEditor,
+  ImageLayer,
+  DrawLayer,
+  wrapShape,
+} from 'react-shape-editor';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+function arrayReplace(arr, index, item) {
+  return [
+    ...arr.slice(0, index),
+    ...(Array.isArray(item) ? item : [item]),
+    ...arr.slice(index + 1),
+  ];
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const RectShape = wrapShape(({ width, height }) => (
+  <rect width={width} height={height} fill="rgba(0,0,255,0.5)" />
+));
+
+let idIterator = 1;
+const Editor = () => {
+  const [items, setItems] = useState([
+    { id: '1', x: 20, y: 120, width: 145, height: 140 },
+    { id: '2', x: 15, y: 0, width: 150, height: 95 },
+  ]);
+
+  const [{ vectorHeight, vectorWidth }, setVectorDimensions] = useState({
+    vectorHeight: 0,
+    vectorWidth: 0,
+  });
+
+  return (
+    <div>
+      Click and drag to draw rects
+      <br />
+      <ShapeEditor vectorWidth={vectorWidth} vectorHeight={vectorHeight}>
+        <ImageLayer id="hi"
+          // Photo by Sarah Gualtieri on Unsplash
+          // src="https://user-images.githubusercontent.com/4413963/70390894-a1880180-1a12-11ea-9901-e250d0f7bb2b.jpg"
+          src="bg.jpg"
+
+          onLoad={({ naturalWidth, naturalHeight }) => {
+            setVectorDimensions({
+              vectorWidth: naturalWidth,
+              vectorHeight: naturalHeight,
+            });
+          }}
+        />
+        <DrawLayer
+          onAddShape={({ x, y, width, height }) => {
+            setItems(currentItems => [
+              ...currentItems,
+              { id: `id${idIterator}`, x, y, width, height },
+            ]);
+            idIterator += 1;
+          }}
+        />
+        {items.map((item, index) => {
+          const { id, height, width, x, y } = item;
+          return (
+            <RectShape
+              key={id}
+              shapeId={id}
+              height={height}
+              width={width}
+              x={x}
+              y={y}
+              onChange={newRect => {
+                setItems(currentItems =>
+                  arrayReplace(currentItems, index, {
+                    ...item,
+                    ...newRect,
+                  })
+                );
+              }}
+              onDelete={() => {
+                setItems(currentItems => arrayReplace(currentItems, index, []));
+              }}
+            />
+          );
+        })}
+      </ShapeEditor>
+      <br />
+    </div>
+  );
+};
+
+const rootElement = document.getElementById('root');
+ReactDOM.render(<Editor />, rootElement);
