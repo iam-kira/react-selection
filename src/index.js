@@ -33,7 +33,7 @@ const Editor = () => {
 
   return (
     <div>
-      Click and drag to draw rects
+      Click and drag to draw select image.
       <br />
       <ShapeEditor vectorWidth={vectorWidth} vectorHeight={vectorHeight}>
         <ImageLayer id="hi"
